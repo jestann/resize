@@ -1,0 +1,35 @@
+.box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #444;
+    border-radius: 5px;
+    padding: 0;
+}
+
+.box:hover {
+    background-color: #666;
+    cursor: pointer;
+}
+
+.text {
+    color: white;
+    font-family: serif;
+    font-size: 3rem;
+    margin: auto;
+}
+
+.handle {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    background-color: red;
+    width: 20px;
+    height: 20px;
+}
+
+.handle:hover {
+    background-color: black;
+    cursor: nwse-resize;
+}
+
