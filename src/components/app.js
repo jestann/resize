@@ -10,39 +10,68 @@ class App extends Component {
       y: 5,
       width: 200,
       height: 100,
-      startX: 0,
-      startY: 0,
+      startX: 5,
+      startY: 5,
+      startResizeX: 0,
+      startResizeY: 0,
+      startMoveX: 0,
+      startMoveY: 0,
       startWidth: 200,
       startHeight: 100,
-      resize: false
+      resize: false,
+      move: false
     }
     this.move = this.move.bind(this)
     this.resize = this.resize.bind(this)
     this.startResize = this.startResize.bind(this)
     this.startMove = this.startMove.bind(this)
     this.handleMouseUp = this.handleMouseUp.bind(this)
+    this.handleMouseMove = this.handleMouseMove.bind(this)
+  }
+
+  handleMouseMove (event) {
+    if (this.state.resize) {
+      this.resize(event)
+    } else if (this.state.move) {
+      this.move(event)
+    } 
+  }
+
+  handleMouseUp (event) {
+    if (this.state.resize) {
+      this.resize(event)
+      this.setState({ resize: false })
+    } else if (this.state.move) {
+      this.move(event)
+      this.setState({ move: false })
+    }
   }
 
   startMove (event) {
     event.persist()
     console.log('start move: ', event)
     this.setState({
-      startX: event.screenX,
-      startY: event.screenY
+      startX: this.state.x,
+      startY: this.state.y,
+      startMoveX: event.screenX,
+      startMoveY: event.screenY,
+      move: true
     })  
-    console.log('start x: ', this.state.startX)
-    console.log('start y: ', this.state.startY)
+    console.log('start x: ', this.state.startMoveX)
+    console.log('start y: ', this.state.startMoveY)
   }
   
   move (event) {
     event.persist() 
     console.log('move: ', event)
-    let differenceX = event.screenX - this.state.startX
-    let differenceY = event.screenY - this.state.startY
+    let differenceX = event.screenX - this.state.startMoveX
+    let differenceY = event.screenY - this.state.startMoveY
     console.log('differenceX: ', differenceX)
     console.log('differenceY: ', differenceY)
-    let newX = this.state.x + differenceX
-    let newY = this.state.y + differenceY
+    let newX = this.state.startX + differenceX
+    let newY = this.state.startY + differenceY
+    console.log('new x: ', newX)
+    console.log('new y: ', newY)
     let x = newX > 0 ? newX : 0
     let y = newY > 0 ? newY : 0
     this.setState({
@@ -55,53 +84,44 @@ class App extends Component {
     event.persist()
     console.log('startResize: ', event)
     this.setState({
-      startX: event.screenX,
-      startY: event.screenY,
+      startResizeX: event.screenX,
+      startResizeY: event.screenY,
       startWidth: this.state.width,
       startHeight: this.state.height,
-      resize: true
+      resize: true,
+      move: false
     })    
-  }
-  
-  handleMouseUp (event) {
-    if (this.state.resize) {
-      this.resize(event)
-    } else {
-      this.move(event)
-    }
   }
 
   resize (event) {
+    this.setState({ move: false })
     event.persist()
-    console.log('resize: ', event)
-    console.log('event.screenX: ', event.screenX)
-    console.log('event.screenY: ', event.screenY)
+    console.log('start width: ', this.state.width)
+    console.log('start height: ', this.state.height)
+    console.log('start resize x: ', event.screenX)
+    console.log('start resize y: ', event.screenY)
     let minWidth = 10
     let minHeight = 20
-    let differenceX = event.screenX - this.state.startX
-    let differenceY = event.screenY - this.state.startY
-    console.log('differenceX: ', differenceX)
-    console.log('differenceY: ', differenceY)
-    console.log('this.state.width: ', this.state.width)
-    let newWidth = this.state.width + differenceX
-    let newHeight = this.state.height + differenceY
+    let differenceX = event.screenX - this.state.startResizeX
+    let differenceY = event.screenY - this.state.startResizeY
+    console.log('make this much wider: ', differenceX)
+    console.log('make this much taller: ', differenceY)
+    let newWidth = this.state.startWidth + differenceX
+    let newHeight = this.state.startHeight + differenceY
     let width = newWidth > minWidth ? newWidth : minWidth
     let height = newHeight > minHeight ? newHeight : minHeight
-    console.log('width: ', width)
-    console.log('height: ', height)
+    console.log('new width: ', width)
+    console.log('new height: ', height)
     this.setState({
       width: width, 
       height: height,
-      resize: false
     })
-    console.log('newWidth: ', this.state.width)
-    console.log('newHeight: ', this.state.height)
   }
 
   render() {
     return (
-      <div className="app" onMouseUp={this.handleMouseUp}>
-        <Resizable {...this.state} startMove={this.startMove} startResize={this.startResize} handleMouseUp={this.handleMouseUp} />
+      <div className="app" onMouseUp={this.handleMouseUp} onMouseMove={this.handleMouseMove}>
+        <Resizable {...this.state} startMove={this.startMove} startResize={this.startResize} handleMouseUp={this.handleMouseUp} handleMouseMove={this.handleMouseMove} />
       </div>
     )
   }
